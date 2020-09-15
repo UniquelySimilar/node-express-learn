@@ -33,12 +33,4 @@ router.delete('/:userId', (req, res) => {
   res.send(`Received a DELETE HTTP request for user ID ${req.params.userId}`);
 });
 
-// Child message
-
-router.post('/:userId/messages', (req, res) => {
-  let text = req.body.text;
-  let newMessage = messageController.create(text, req.params.userId);
-  res.send(newMessage);
-});
-
 export default router;

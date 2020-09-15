@@ -14,6 +14,17 @@ class MessageController {
     return this.messages.find( message => message.id == id );
   }
 
+  findByUser(userId) {
+    return [
+      {
+        id: 1,
+        text: 'placeholder message',
+        userId: 1
+      }
+    ]
+    //return this.messages.filter( message => message.userId == userId);
+  }
+
   create(text, userId) {
     let newId = Utilities.getNextId(this.messages);
     let newMessage = new Message(newId, text, userId);
