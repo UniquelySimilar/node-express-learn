@@ -6,24 +6,28 @@ var userController = new UserController();
 
 // User routes
 router.get('/', (req, res) => {
-  res.send(userController.findAll());
+  userController.findAll(function(results) {
+    res.send(results);
+  });
 });
   
 router.get('/:userId', (req, res) => {
-  let user = userController.find([req.params.userId]);
-  if (user) {
-    res.send(user);
-  }
-  else {
-    res.status(404).send("Not found.");
-  }
+  userController.find([req.params.userId], function(results) {
+    if (results) {
+      res.send(results);
+    }
+    else {
+      res.status(404).send("Not found.");
+    }
+  });
 });
   
 router.post('/', (req, res) => {
   let name = req.body.username;
   if (name) {
-    let newUser = userController.create(name);
-    res.send(newUser);
+    userController.create(name, function(results) {
+      res.send(results); // New user ID
+    });
   }
   else {
     res.status(400).send("Bad request - missing 'username' body parameter.");
