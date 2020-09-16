@@ -1,5 +1,6 @@
 import User from '../model/user.js';
 import Utilities from '../utilities.js';
+import pool from '../mysql-conn-pool.js';
 
 class UserController {
   constructor() {
@@ -7,7 +8,16 @@ class UserController {
   }
 
   findAll() {
-    return this.users;
+    var mappedUsers = [];
+    pool.query('SELECT * from users', function (error, results, fields) {
+      if (error) throw error;
+
+      // Convert result from array of RowDataPacket objects to array of object literals
+      mappedUsers = results.map( result => Object.assign({}, result) );
+      console.log(mappedUsers);
+    });
+
+    return mappedUsers;
   }
 
   find(id) {
