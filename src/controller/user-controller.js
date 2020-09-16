@@ -14,17 +14,19 @@ class UserController {
     return this.users.find( user => user.id == id);
   }
 
-  create(userName) {
+  create(name) {
     let newId = Utilities.getNextId(this.users);
-    let newUser = new User(newId, userName);
+    let newUser = new User(newId, name);
     this.users.push(newUser);
 
     return newUser;
   }
 
-  update(id, userName) {
+  update(id, name) {
     let user = this.find(id);
-    user.userName = userName;
+    if (user) {
+      user.name = name;
+    }
 
     return user;
   }

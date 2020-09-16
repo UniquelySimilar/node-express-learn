@@ -1,10 +1,8 @@
 import express from 'express';
 import UserController from '../controller/user-controller.js';
-import MessageController from '../controller/message-controller.js';
 
 var router = express.Router();
 var userController = new UserController();
-var messageController = new MessageController();
 
 // User routes
 router.get('/', (req, res) => {
@@ -12,20 +10,41 @@ router.get('/', (req, res) => {
 });
   
 router.get('/:userId', (req, res) => {
-  res.send(userController.find([req.params.userId]));
+  let user = userController.find([req.params.userId]);
+  if (user) {
+    res.send(user);
+  }
+  else {
+    res.status(404).send("Not found.");
+  }
 });
   
 router.post('/', (req, res) => {
-  let userName = req.body.username;
-  let newUser = userController.create(userName);
-  res.send(newUser);
+  let name = req.body.username;
+  if (name) {
+    let newUser = userController.create(name);
+    res.send(newUser);
+  }
+  else {
+    res.status(400).send("Bad request - missing 'username' body parameter.");
+  }
 });
   
 router.put('/:userId', (req, res) => {
   let id = req.params.userId;
-  let userName = req.body.username;
-  let updatedUser = userController.update(id, userName);
-  res.send(updatedUser);
+  let name = req.body.username;
+  if (name) {
+    let updatedUser = userController.update(id, name);
+    if (updatedUser) {
+      res.send(updatedUser);
+    }
+    else {
+      res.status(404).send(`Not found - user ID ${id}`);
+    }
+  }
+  else {
+    res.status(400).send("Bad request - missing 'username' body parameter.");
+  }
 });
   
 router.delete('/:userId', (req, res) => {

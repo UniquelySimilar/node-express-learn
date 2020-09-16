@@ -7,8 +7,14 @@ var messageController = new MessageController();
 // Message routes
 router.get('/', (req, res) => {
   let userId = req.query.userid;
-  if (userId !== undefined) {
-    res.send(messageController.findByUser(userId));
+  if (userId) {
+    let result = messageController.findByUser(userId);
+    if (result) {
+      res.send(result);
+    }
+    else {
+      res.status(404).send("Not found.");
+    }
   }
   else {
     res.send(messageController.findAll());
@@ -29,10 +35,15 @@ router.get('/:messageId', (req, res) => {
 
 // Modify to take userId as a query parameter
 router.post('/', (req, res) => {
-  let text = req.body.text;
   let userId = req.query.userid;
-  let newMessage = messageController.create(text, userId);
-  res.send(newMessage);
+  if (!userId) {
+    res.status(400).send("Bad request - missing 'userid' query parameter.");
+  }
+  else {
+    let text = req.body.text;
+    let newMessage = messageController.create(text, userId);
+    res.send(newMessage);
+  }
 });
 
 export default router;
