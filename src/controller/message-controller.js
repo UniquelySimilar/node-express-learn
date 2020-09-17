@@ -1,36 +1,51 @@
-import Message from '../model/message.js';
-import Utilities from '../utilities.js';
+import pool from '../mysql-conn-pool.js';
 
 class MessageController {
-  constructor() {
-    this.messages = [];
+  findAll(callback) {
+    pool.query("SELECT * FROM messages", function(error, results, fields) {
+      if (error) throw error;
+
+      // Convert result from array of RowDataPacket objects to array of object literals
+      let messages = results.map( result => Object.assign({}, result) );
+
+      return callback(messages);
+    });
   }
 
-  findAll() {
-    return this.messages;
-  }
+  find(id, callback) {
+    pool.query('SELECT * FROM messages WHERE id = ?', [id], function(error, results, fields) {
+      if (error) throw error;
 
-  find(id) {
-    return this.messages.find( message => message.id == id );
-  }
-
-  findByUser(userId) {
-    return [
-      {
-        id: 1,
-        text: 'placeholder message',
-        userId: 1
+      // Convert result from array of RowDataPacket objects to array of object literals
+      let messages = results.map( result => Object.assign({}, result) );
+      let message = null;
+      if (messages.length > 0) {
+        message = messages[0];
       }
-    ]
-    //return this.messages.filter( message => message.userId == userId);
+
+      return callback(message);
+    });
   }
 
-  create(text, userId) {
-    let newId = Utilities.getNextId(this.messages);
-    let newMessage = new Message(newId, text, userId);
-    this.messages.push(newMessage);
+  findByUser(userId, callback) {
+    pool.query('SELECT * FROM messages WHERE user_id = ?', [userId], function(error, results, fields) {
+      if (error) throw error;
 
-    return newMessage;
+      return callback(results);
+    })
+  }
+
+  create(text, userId, callback) {
+    pool.query('INSERT INTO messages (text, user_id) VALUES(?, ?)', [text, userId], function(error, results, fields) {
+      if (error) {
+        console.error(`ERROR: ${error.sqlMessage}`);
+      }
+      else {
+        console.log(results);
+      }
+
+      return callback(results);
+    })
   }
 
 }

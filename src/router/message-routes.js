@@ -8,41 +8,44 @@ var messageController = new MessageController();
 router.get('/', (req, res) => {
   let userId = req.query.userid;
   if (userId) {
-    let result = messageController.findByUser(userId);
-    if (result) {
-      res.send(result);
-    }
-    else {
-      res.status(404).send("Not found.");
-    }
+    messageController.findByUser(parseInt(userId), function(results) {
+      res.send(results);
+    });
   }
   else {
-    res.send(messageController.findAll());
+    messageController.findAll(function(results) {
+      res.send(results);
+    })
   }
 });
   
 router.get('/:messageId', (req, res) => {
-  let result = messageController.find(req.params.messageId);
-  if (result) {
-    res.send(result);
-  }
-  else {
-    res.status(404).send("Not found.");
-  }
-
-  res.send();
+  messageController.find(req.params.messageId, function(results) {
+    if(results) {
+      res.send(results);
+    }
+    else {
+      res.sendStatus(404);
+    }
+  })
 });
 
 // Modify to take userId as a query parameter
 router.post('/', (req, res) => {
-  let userId = req.query.userid;
-  if (!userId) {
-    res.status(400).send("Bad request - missing 'userid' query parameter.");
+  let userId = req.body.userid;
+  let text = req.body.text;
+  if (!userId || !text) {
+    res.sendStatus(400);
   }
   else {
-    let text = req.body.text;
-    let newMessage = messageController.create(text, userId);
-    res.send(newMessage);
+    messageController.create(text, userId, function(results) {
+      if (!results) {
+        res.sendStatus(400);
+      }
+      else {
+        res.sendStatus(201);
+      }
+    })
   }
 });
 
