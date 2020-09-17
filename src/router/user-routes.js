@@ -17,7 +17,7 @@ router.get('/:userId', (req, res) => {
       res.send(results);
     }
     else {
-      res.status(404).send("Not found.");
+      res.sendStatus(404);
     }
   });
 });
@@ -30,7 +30,7 @@ router.post('/', (req, res) => {
     });
   }
   else {
-    res.status(400).send("Bad request - missing 'username' body parameter.");
+    res.sendStatus(404);
   }
 });
   
@@ -38,22 +38,31 @@ router.put('/:userId', (req, res) => {
   let id = req.params.userId;
   let name = req.body.username;
   if (name) {
-    let updatedUser = userController.update(id, name);
-    if (updatedUser) {
-      res.send(updatedUser);
-    }
-    else {
-      res.status(404).send(`Not found - user ID ${id}`);
-    }
+    userController.update(id, name, function(results) {
+      if (results.affectedRows === 0) {
+        res.sendStatus(404);
+      }
+      else {
+        res.sendStatus(204);
+      }
+    })
   }
   else {
-    res.status(400).send("Bad request - missing 'username' body parameter.");
+    res.sendStatus(404);
   }
 });
   
 router.delete('/:userId', (req, res) => {
-  userController.delete(req.params.userId);
-  res.send(`Received a DELETE HTTP request for user ID ${req.params.userId}`);
+  let id = req.params.userId;
+  userController.delete(id, function(results) {
+    console.log(results);
+    if (results.affectedRows === 0) {
+      res.sendStatus(404);
+    }
+    else {
+      res.sendStatus(204);
+    }
+  });
 });
 
 export default router;

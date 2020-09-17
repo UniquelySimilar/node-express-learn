@@ -1,4 +1,3 @@
-import User from '../model/user.js';
 import pool from '../mysql-conn-pool.js';
 
 class UserController {
@@ -40,14 +39,21 @@ class UserController {
     });
   }
 
-  // TODO: Re-implement using database
-  update(id, name) {
-    //return user;
+  update(id, name, callback) {
+    pool.query('UPDATE users SET name = ? WHERE id = ?', [name, id], function (error, results, fields) {
+      if (error) throw error;
+
+      return callback(results);
+    });
   }
 
   // TODO: Re-implement using database
-  delete(id) {
+  delete(id, callback) {
+    pool.query('DELETE FROM users WHERE id = ?', [id], function(error, results, fields) {
+      if (error) throw error;
 
+      return callback(results);
+    });
   }
 
 }
