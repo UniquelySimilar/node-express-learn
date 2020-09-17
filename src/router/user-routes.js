@@ -55,7 +55,6 @@ router.put('/:userId', (req, res) => {
 router.delete('/:userId', (req, res) => {
   let id = req.params.userId;
   userController.delete(id, function(results) {
-    console.log(results);
     if (results.affectedRows === 0) {
       res.sendStatus(404);
     }

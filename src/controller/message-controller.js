@@ -38,14 +38,46 @@ class MessageController {
   create(text, userId, callback) {
     pool.query('INSERT INTO messages (text, user_id) VALUES(?, ?)', [text, userId], function(error, results, fields) {
       if (error) {
-        console.error(`ERROR: ${error.sqlMessage}`);
-      }
-      else {
-        console.log(results);
+        if (error.sqlMessage) {
+          console.error(`ERROR: ${error.sqlMessage}`);
+        }
+        else {
+          console.error(error);
+        }
       }
 
       return callback(results);
-    })
+    });
+  }
+
+  update(id, text, callback) {
+    pool.query("UPDATE messages SET text = ? WHERE id = ?", [text, id], function(error, results, fields) {
+      if (error) {
+        if (error.sqlMessage) {
+          console.error(`ERROR: ${error.sqlMessage}`);
+        }
+        else {
+          console.error(error);
+        }
+      }
+
+      return callback(results);
+    });
+  }
+
+  delete(id, callback) {
+    pool.query("DELETE FROM messages WHERE id = ?", [id], function(error, results, fields) {
+      if (error) {
+        if (error.sqlMessage) {
+          console.error(`ERROR: ${error.sqlMessage}`);
+        }
+        else {
+          console.error(error);
+        }
+      }
+
+      return callback(results);
+    }) 
   }
 
 }

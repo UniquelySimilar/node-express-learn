@@ -30,7 +30,6 @@ router.get('/:messageId', (req, res) => {
   })
 });
 
-// Modify to take userId as a query parameter
 router.post('/', (req, res) => {
   let userId = req.body.userid;
   let text = req.body.text;
@@ -47,6 +46,36 @@ router.post('/', (req, res) => {
       }
     })
   }
+});
+
+router.put('/:messageId', (req, res) => {
+  let messageId = req.params.messageId;
+  let text = req.body.text;
+  if (!text) {
+    res.sendStatus(400);
+  }
+  else {
+    messageController.update(messageId, text, function(results) {
+      if(results.affectedRows === 1) {
+        res.sendStatus(204);
+      }
+      else {
+        res.sendStatus(404);
+      }
+    })
+  }
+});
+
+router.delete('/:messageId', (req, res) => {
+  let messageId = req.params.messageId;
+  messageController.delete(messageId, function(results) {
+    if(results.affectedRows === 1) {
+      res.sendStatus(204);
+    }
+    else {
+      res.sendStatus(404);
+    }
+  })
 });
 
 export default router;
